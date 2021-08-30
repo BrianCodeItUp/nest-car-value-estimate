@@ -35,5 +35,8 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 
-# develope database
+# develop database
 *.db
+
+# develop rest client config
+*.http
