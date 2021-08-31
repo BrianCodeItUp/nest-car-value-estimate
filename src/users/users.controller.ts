@@ -8,19 +8,49 @@ import {
   Query,
   Delete,
   NotFoundException,
+  Session,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto, UserDto } from './dtos';
 import { UsersService } from './users.service';
+import { AuthService } from './auth.service';
 import { Serialize } from '../interceptors/serialize.interceptor';
+import { CurrentUser } from './decorators';
+import { User } from './user.entity';
+import { AuthGuard } from '../guards/auth.guard';
 
 @Controller('auth')
 @Serialize(UserDto)
 export class UsersController {
-  constructor(private userService: UsersService) {}
+  constructor(
+    private userService: UsersService,
+    private authService: AuthService,
+  ) {}
+
+  @Get('/whoami')
+  @UseGuards(AuthGuard)
+  whoami(@CurrentUser() user: User) {
+    console.log(user);
+    return user;
+  }
 
   @Post('/signup')
-  createUser(@Body() body: CreateUserDto) {
-    this.userService.create(body.email, body.password);
+  async createUser(@Body() body: CreateUserDto, @Session() session: any) {
+    const user = await this.authService.signup(body.email, body.password);
+    session.userId = user.id;
+    return user;
+  }
+
+  @Post('/signin')
+  async signin(@Body() body: CreateUserDto, @Session() session: any) {
+    const user = await this.authService.signin(body.email, body.password);
+    session.userId = user.id;
+    return user;
+  }
+
+  @Post('/signout')
+  signOut(@Session() session: any) {
+    session.userId = null;
   }
 
   @Get('/:id')
