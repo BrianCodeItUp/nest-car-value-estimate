@@ -40,3 +40,6 @@ lerna-debug.log*
 
 # develop rest client config
 *.http
+
+## env files
+.env.*
