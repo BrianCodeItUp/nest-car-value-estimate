@@ -25,6 +25,6 @@ interface ClassConstructor {
   // eslint-disable-next-line @typescript-eslint/ban-types
   new (...args: any[]): {};
 }
-export function Serialize(dto: ClassConstructor) {
+export default function Serialize(dto: ClassConstructor) {
   return UseInterceptors(new SerializeInterceptor(dto));
 }
