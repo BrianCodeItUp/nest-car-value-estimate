@@ -26,7 +26,6 @@ import cookieSession from 'cookie-session';
       useFactory: (config: ConfigService) => {
         return {
           type: 'sqlite',
-          // database: config.get<string>('DB_NAME'),
           database: config.get<string>('DB_NAME'),
           synchronize: true,
           entities: [User, Report],
@@ -48,11 +47,12 @@ import cookieSession from 'cookie-session';
   ],
 })
 export class AppModule implements NestModule {
+  constructor(private configService: ConfigService) {}
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(
         cookieSession({
-          keys: ['brian'],
+          keys: [this.configService.get('COOKIE_KEY')],
         }),
       )
       .forRoutes('*');
